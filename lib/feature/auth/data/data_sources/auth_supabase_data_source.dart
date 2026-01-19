@@ -1,0 +1,48 @@
+import 'package:clean_bloc_supabase/core/exception.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+abstract interface class AuthSupabaseDataSource {
+  Future<String> signupWithEmailPassword({
+    required String name,
+    required String email,
+    required String password,
+  });
+
+  Future<String> loginWithEmailPassword({
+    required String email,
+    required String password,
+  });
+}
+
+class AuthSupabaseDataSourceImplementatin implements AuthSupabaseDataSource {
+  final SupabaseClient supabaseClient;
+  const AuthSupabaseDataSourceImplementatin(this.supabaseClient);
+  @override
+  Future<String> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> signupWithEmailPassword({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await supabaseClient.auth.signUp(
+        password: password,
+        email: email,
+        data: {'name': name},
+      );
+      if (response.user == null) {
+        throw const ServerException('user is null');
+      }
+      return response.user!.id;
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+}
