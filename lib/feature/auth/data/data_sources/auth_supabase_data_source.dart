@@ -14,9 +14,9 @@ abstract interface class AuthSupabaseDataSource {
   });
 }
 
-class AuthSupabaseDataSourceImplementatin implements AuthSupabaseDataSource {
+class AuthSupabaseDataSourceImplementation implements AuthSupabaseDataSource {
   final SupabaseClient supabaseClient;
-  const AuthSupabaseDataSourceImplementatin(this.supabaseClient);
+  const AuthSupabaseDataSourceImplementation(this.supabaseClient);
   @override
   Future<String> loginWithEmailPassword({
     required String email,

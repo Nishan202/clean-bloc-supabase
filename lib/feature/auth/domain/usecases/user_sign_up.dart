@@ -1,7 +1,7 @@
+import 'package:fpdart/fpdart.dart';
 import 'package:clean_bloc_supabase/core/error/failures.dart';
 import 'package:clean_bloc_supabase/core/usecase/usecase.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/repository/auth_repository.dart';
-import 'package:fpdart/fpdart.dart';
 
 class UserSignUp implements Usecase<String, UserSignupParameters> {
   final AuthRepository authRepository;
@@ -22,9 +22,9 @@ class UserSignupParameters {
   final String email;
   final String password;
   final String name;
-  const UserSignupParameters({
+  UserSignupParameters({
     required this.email,
-    required this.name,
     required this.password,
+    required this.name,
   });
 }
