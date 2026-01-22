@@ -69,7 +69,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
-                  context.goNamed(RouteConstants.login);
+                  context.replace(RouteConstants.login);
                 },
                 child: RichText(
                   text: TextSpan(
