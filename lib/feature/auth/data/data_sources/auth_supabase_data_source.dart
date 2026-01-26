@@ -1,14 +1,15 @@
 import 'package:clean_bloc_supabase/core/exception.dart';
+import 'package:clean_bloc_supabase/feature/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class AuthSupabaseDataSource {
-  Future<String> signupWithEmailPassword({
+  Future<UserModel> signupWithEmailPassword({
     required String name,
     required String email,
     required String password,
   });
 
-  Future<String> loginWithEmailPassword({
+  Future<UserModel> loginWithEmailPassword({
     required String email,
     required String password,
   });
@@ -18,7 +19,7 @@ class AuthSupabaseDataSourceImplementation implements AuthSupabaseDataSource {
   final SupabaseClient supabaseClient;
   const AuthSupabaseDataSourceImplementation(this.supabaseClient);
   @override
-  Future<String> loginWithEmailPassword({
+  Future<UserModel> loginWithEmailPassword({
     required String email,
     required String password,
   }) {
@@ -26,7 +27,7 @@ class AuthSupabaseDataSourceImplementation implements AuthSupabaseDataSource {
   }
 
   @override
-  Future<String> signupWithEmailPassword({
+  Future<UserModel> signupWithEmailPassword({
     required String name,
     required String email,
     required String password,
@@ -40,7 +41,7 @@ class AuthSupabaseDataSourceImplementation implements AuthSupabaseDataSource {
       if (response.user == null) {
         throw const ServerException('user is null');
       }
-      return response.user!.id;
+      return UserModel.fromJson(response.user!.toJson());
     } catch (e) {
       throw ServerException(e.toString());
     }

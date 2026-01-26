@@ -3,6 +3,7 @@ import 'package:clean_bloc_supabase/feature/auth/data/data_sources/auth_supabase
 import 'package:clean_bloc_supabase/feature/auth/data/repositories/auth_repository_implementation.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/repository/auth_repository.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/usecases/user_sign_up.dart';
+import 'package:clean_bloc_supabase/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -28,7 +29,11 @@ void _initAuth() {
         AuthRepositoryImplementation(serviceLocator<AuthSupabaseDataSource>()),
   );
 
-  serviceLocator.registerLazySingleton(
+  serviceLocator.registerFactory(
     () => UserSignUp(authRepository: serviceLocator<AuthRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton(
+    () => AuthBloc(userSignUp: serviceLocator<UserSignUp>()),
   );
 }
