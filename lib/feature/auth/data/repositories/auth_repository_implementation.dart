@@ -1,5 +1,5 @@
 import 'package:clean_bloc_supabase/core/error/failures.dart';
-import 'package:clean_bloc_supabase/core/exception.dart';
+import 'package:clean_bloc_supabase/core/error/exception.dart';
 import 'package:clean_bloc_supabase/feature/auth/data/data_sources/auth_supabase_data_source.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/entities/user.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/repository/auth_repository.dart';
@@ -31,7 +31,7 @@ class AuthRepositoryImplementation implements AuthRepository {
       );
       return right(user);
     } on ServerException catch (e) {
-      return throw left(Failures(e.toString()));
+      return left(Failures(e.message));
     }
   }
 }

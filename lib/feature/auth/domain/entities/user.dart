@@ -3,5 +3,11 @@ class User {
   String id;
   String name;
   String email;
-  User({required this.id, required this.name, required this.email});
+  String password;
+  User({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.password,
+  });
 }

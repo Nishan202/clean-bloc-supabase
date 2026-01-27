@@ -1,4 +1,4 @@
-import 'package:clean_bloc_supabase/core/exception.dart';
+import 'package:clean_bloc_supabase/core/error/exception.dart';
 import 'package:clean_bloc_supabase/feature/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -42,6 +42,8 @@ class AuthSupabaseDataSourceImplementation implements AuthSupabaseDataSource {
         throw const ServerException('user is null');
       }
       return UserModel.fromJson(response.user!.toJson());
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
