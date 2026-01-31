@@ -36,6 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
           listener: (context, state) {
             if (state is AuthFailure) {
               showSnackbar(context, state.message);
+            } else if (state is AuthSuccess) {
+              context.goNamed(RouteConstants.home);
             }
           },
           builder: (context, state) {
@@ -64,20 +66,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     isLoading: state is AuthLoading,
                     buttonText: 'Sign in',
                     onPressed: () {
-                      // if (formKey.currentState!.validate()) {
-                      //   context.read<AuthBloc>().add(
-                      //     AuthLogin(
-                      //       email: emailController.text.trim(),
-                      //       password: passwordController.text.trim(),
-                      //     ),
-                      //   );
-                      // }
+                      if (formKey.currentState!.validate()) {
+                        context.read<AuthBloc>().add(
+                          AuthLogin(
+                            email: emailController.text.trim(),
+                            password: passwordController.text.trim(),
+                          ),
+                        );
+                      }
                     },
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      context.goNamed(RouteConstants.signup);
+                      context.pushNamed(RouteConstants.signup);
                     },
                     child: RichText(
                       text: TextSpan(

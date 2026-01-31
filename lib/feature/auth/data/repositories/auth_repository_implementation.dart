@@ -4,6 +4,7 @@ import 'package:clean_bloc_supabase/feature/auth/data/data_sources/auth_supabase
 import 'package:clean_bloc_supabase/feature/auth/domain/entities/user.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/repository/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 class AuthRepositoryImplementation implements AuthRepository {
   final AuthSupabaseDataSource authSupabaseDataSource;
@@ -13,8 +14,12 @@ class AuthRepositoryImplementation implements AuthRepository {
     required String email,
     required String password,
   }) {
-    // TODO: implement loginWithEmailPassword
-    throw UnimplementedError();
+    return _getUser(
+      () async => await authSupabaseDataSource.loginWithEmailPassword(
+        email: email,
+        password: password,
+      ),
+    );
   }
 
   @override
@@ -22,14 +27,22 @@ class AuthRepositoryImplementation implements AuthRepository {
     required String name,
     required String email,
     required String password,
-  }) async {
-    try {
-      final user = await authSupabaseDataSource.signupWithEmailPassword(
+  }) {
+    return _getUser(
+      () async => await authSupabaseDataSource.signupWithEmailPassword(
         name: name,
         email: email,
         password: password,
-      );
+      ),
+    );
+  }
+
+  Future<Either<Failures, User>> _getUser(Future<User> Function() fn) async {
+    try {
+      final user = await fn();
       return right(user);
+    } on sb.AuthException catch (e) {
+      return left(Failures(e.message));
     } on ServerException catch (e) {
       return left(Failures(e.message));
     }

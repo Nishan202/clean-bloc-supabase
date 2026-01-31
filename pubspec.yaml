@@ -46,6 +46,7 @@ dependencies:
   path_provider: ^2.1.5
   go_router: ^17.0.1
   loading_animation_widget: ^1.3.0
+  pretty_logger: ^1.0.0
 
 dev_dependencies:
   flutter_test:

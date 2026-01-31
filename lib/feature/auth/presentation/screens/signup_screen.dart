@@ -38,6 +38,8 @@ class _SignupScreenState extends State<SignupScreen> {
           listener: (context, state) {
             if (state is AuthFailure) {
               showSnackbar(context, state.message);
+            } else if (state is AuthSuccess) {
+              context.goNamed(RouteConstants.home);
             }
           },
           builder: (context, state) {
@@ -82,7 +84,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      context.replace(RouteConstants.login);
+                      // context.replaceNamed(RouteConstants.login);
+                      if (context.canPop()) {
+                        context.pop();
+                      }
                     },
                     child: RichText(
                       text: TextSpan(
