@@ -1,7 +1,7 @@
 import 'package:clean_bloc_supabase/core/error/failures.dart';
 import 'package:clean_bloc_supabase/core/error/exception.dart';
 import 'package:clean_bloc_supabase/feature/auth/data/data_sources/auth_supabase_data_source.dart';
-import 'package:clean_bloc_supabase/feature/auth/domain/entities/user.dart';
+import 'package:clean_bloc_supabase/core/entities/user.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/repository/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
@@ -9,6 +9,20 @@ import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 class AuthRepositoryImplementation implements AuthRepository {
   final AuthSupabaseDataSource authSupabaseDataSource;
   const AuthRepositoryImplementation(this.authSupabaseDataSource);
+
+  @override
+  Future<Either<Failures, User>> currentUserDetails() async {
+    try {
+      final user = await authSupabaseDataSource.getCurrentUserData();
+      if (user == null) {
+        return left(Failures('User not Logged in!'));
+      }
+      return right(user);
+    } on ServerException catch (e) {
+      return left(Failures(e.message));
+    }
+  }
+
   @override
   Future<Either<Failures, User>> loginWithEmailPassword({
     required String email,

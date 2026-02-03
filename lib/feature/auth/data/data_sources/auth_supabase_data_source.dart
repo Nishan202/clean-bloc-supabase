@@ -4,6 +4,7 @@ import 'package:pretty_logger/pretty_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class AuthSupabaseDataSource {
+  Session? get currentUserSession;
   Future<UserModel> signupWithEmailPassword({
     required String name,
     required String email,
@@ -14,9 +15,31 @@ abstract interface class AuthSupabaseDataSource {
     required String email,
     required String password,
   });
+
+  Future<UserModel?> getCurrentUserData();
 }
 
 class AuthSupabaseDataSourceImplementation implements AuthSupabaseDataSource {
+  @override
+  Future<UserModel?> getCurrentUserData() async {
+    try {
+      if (currentUserSession != null) {
+        final userData = await supabaseClient
+            .from('profiles')
+            .select()
+            .eq('id', currentUserSession!.user.id);
+        return UserModel.fromJson(
+          userData.first,
+        ).copyWith(email: currentUserSession!.user.email);
+      }
+      return null;
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Session? get currentUserSession => supabaseClient.auth.currentSession;
   final SupabaseClient supabaseClient;
   const AuthSupabaseDataSourceImplementation(this.supabaseClient);
   @override
@@ -32,6 +55,7 @@ class AuthSupabaseDataSourceImplementation implements AuthSupabaseDataSource {
       if (response.user == null) {
         throw const ServerException('User is Null');
       }
+      Logger.green('User Login Data -- ${response.user!.toJson()}');
       return UserModel.fromJson(response.user!.toJson());
     } on AuthApiException catch (e) {
       Logger.red(e.message);
@@ -57,6 +81,7 @@ class AuthSupabaseDataSourceImplementation implements AuthSupabaseDataSource {
       if (response.user == null) {
         throw const ServerException('user is null');
       }
+      Logger.green('Sign Up data -- ${response.user!.toJson()}');
       return UserModel.fromJson(response.user!.toJson());
     } on AuthException catch (e) {
       Logger.red(e.message);

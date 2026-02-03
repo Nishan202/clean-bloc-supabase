@@ -1,5 +1,5 @@
 import 'package:clean_bloc_supabase/core/error/failures.dart';
-import 'package:clean_bloc_supabase/feature/auth/domain/entities/user.dart';
+import 'package:clean_bloc_supabase/core/entities/user.dart';
 import 'package:fpdart/fpdart.dart';
 
 abstract interface class AuthRepository {
@@ -13,4 +13,6 @@ abstract interface class AuthRepository {
     required String email,
     required String password,
   });
+
+  Future<Either<Failures, User>> currentUserDetails();
 }
