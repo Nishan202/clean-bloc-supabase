@@ -4,8 +4,11 @@ import 'package:clean_bloc_supabase/feature/auth/presentation/bloc/auth_bloc.dar
 import 'package:clean_bloc_supabase/feature/auth/presentation/screens/home_screen.dart';
 import 'package:clean_bloc_supabase/feature/auth/presentation/screens/login_screen.dart';
 import 'package:clean_bloc_supabase/feature/auth/presentation/screens/signup_screen.dart';
+import 'package:clean_bloc_supabase/feature/blog/domain/entities/blog.dart';
+import 'package:clean_bloc_supabase/feature/blog/presentation/screens/add_blog_screen.dart';
+import 'package:clean_bloc_supabase/feature/blog/presentation/screens/blog_details_screen.dart';
+import 'package:clean_bloc_supabase/feature/blog/presentation/screens/blog_listing_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
@@ -32,6 +35,28 @@ class AppRouter {
         path: '/signUp',
         pageBuilder: (context, state) =>
             MaterialPage(key: state.pageKey, child: const SignupScreen()),
+      ),
+      GoRoute(
+        name: RouteConstants.blogListing,
+        path: '/blogs',
+        pageBuilder: (context, state) =>
+            MaterialPage(key: state.pageKey, child: const BlogListingScreen()),
+      ),
+      GoRoute(
+        name: RouteConstants.addBlog,
+        path: '/add-blog',
+        pageBuilder: (context, state) =>
+            MaterialPage(key: state.pageKey, child: const AddBlogScreen()),
+      ),
+      GoRoute(
+        name: RouteConstants.blogDetails,
+        path: '/blog/:blogId',
+        pageBuilder: (context, state) {
+          return MaterialPage(
+            key: state.pageKey,
+            child: BlogDetailsScreen(blog: state.extra as Blog),
+          );
+        },
       ),
     ],
     initialLocation: RouteConstants.login,

@@ -7,46 +7,82 @@ import 'package:clean_bloc_supabase/feature/auth/domain/usecases/current_user.da
 import 'package:clean_bloc_supabase/feature/auth/domain/usecases/user_log_in.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/usecases/user_sign_up.dart';
 import 'package:clean_bloc_supabase/feature/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_bloc_supabase/feature/blog/data/data_sources/blog_supabase_data_sources.dart';
+import 'package:clean_bloc_supabase/feature/blog/data/repositories/blog_repository_implementation.dart';
+import 'package:clean_bloc_supabase/feature/blog/domain/repository/blog_repository.dart';
+import 'package:clean_bloc_supabase/feature/blog/domain/usecases/get_all_blogs.dart';
+import 'package:clean_bloc_supabase/feature/blog/domain/usecases/get_blog_by_id.dart';
+import 'package:clean_bloc_supabase/feature/blog/domain/usecases/upload_blog.dart';
+import 'package:clean_bloc_supabase/feature/blog/presentation/bloc/blog_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final GetIt serviceLocator = GetIt.instance;
+final GetIt dependencyInjector = GetIt.instance;
 
 Future<void> initDependencies() async {
   _initAuth();
+  _initBlog();
   final supabse = await Supabase.initialize(
     url: Secrets.url,
     anonKey: Secrets.publishableAPIKey,
   );
-  serviceLocator.registerLazySingleton(() => supabse.client);
-  serviceLocator.registerLazySingleton(() => AppUserCubit());
+  dependencyInjector.registerLazySingleton(() => supabse.client);
+  dependencyInjector.registerLazySingleton(() => AppUserCubit());
 }
 
 void _initAuth() {
   // Data Source
-  serviceLocator
+  dependencyInjector
     ..registerFactory<AuthSupabaseDataSource>(
       () => AuthSupabaseDataSourceImplementation(
-        serviceLocator<SupabaseClient>(),
+        dependencyInjector<SupabaseClient>(),
       ),
     )
     //Repository
     ..registerFactory<AuthRepository>(
       () => AuthRepositoryImplementation(
-        serviceLocator<AuthSupabaseDataSource>(),
+        dependencyInjector<AuthSupabaseDataSource>(),
       ),
     )
     // Use cases
-    ..registerFactory(() => UserSignUp(authRepository: serviceLocator()))
-    ..registerFactory(() => UserLogin(authRepository: serviceLocator()))
-    ..registerFactory(() => CurrentUser(serviceLocator()))
+    ..registerFactory(() => UserSignUp(authRepository: dependencyInjector()))
+    ..registerFactory(() => UserLogin(authRepository: dependencyInjector()))
+    ..registerFactory(() => CurrentUser(dependencyInjector()))
     // Bloc
     ..registerLazySingleton(
       () => AuthBloc(
-        userSignUp: serviceLocator<UserSignUp>(),
-        userLogin: serviceLocator<UserLogin>(),
-        currentUser: serviceLocator<CurrentUser>(),
-        appUserCubit: serviceLocator<AppUserCubit>(),
+        userSignUp: dependencyInjector<UserSignUp>(),
+        userLogin: dependencyInjector<UserLogin>(),
+        currentUser: dependencyInjector<CurrentUser>(),
+        appUserCubit: dependencyInjector<AppUserCubit>(),
+      ),
+    );
+}
+
+void _initBlog() {
+  // Data source
+  dependencyInjector
+    ..registerFactory<BlogSupabaseDataSources>(
+      () => BlogSupabaseDataSourceImplementation(
+        supabaseClient: dependencyInjector(),
+      ),
+    )
+    //Repository
+    ..registerFactory<BlogRepository>(
+      () => BlogRepositoryImplementation(
+        blogSupabaseDataSources: dependencyInjector(),
+      ),
+    )
+    // Use cases
+    ..registerFactory(() => UploadBlog(blogRepository: dependencyInjector()))
+    ..registerFactory(() => GetAllBlogs(blogRepository: dependencyInjector()))
+    // ..registerFactory(() => GetBlogById(blogRepository: dependencyInjector()))
+    // Bloc
+    ..registerLazySingleton(
+      () => BlogBloc(
+        uploadBlog: dependencyInjector(),
+        getAllBlogs: dependencyInjector(),
+        // getBlogById: dependencyInjector(),
       ),
     );
 }

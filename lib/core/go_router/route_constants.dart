@@ -8,4 +8,7 @@ class RouteConstants {
   static String verifyEmail = '/verify-email';
   static String dashboard = '/dashboard';
   static String profile = '/profile';
+  static String blogListing = '/blogs';
+  static String addBlog = '/add-blog';
+  static String blogDetails = '/blog/:blogId';
 }
