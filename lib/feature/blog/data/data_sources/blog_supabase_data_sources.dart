@@ -26,6 +26,8 @@ class BlogSupabaseDataSourceImplementation implements BlogSupabaseDataSources {
           .insert(blogModel.toJson())
           .select();
       return BlogModel.fromJson(blogData.first);
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -43,6 +45,8 @@ class BlogSupabaseDataSourceImplementation implements BlogSupabaseDataSources {
       return supabaseClient.storage
           .from('blog_images')
           .getPublicUrl(blogModel.id);
+    } on StorageException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }

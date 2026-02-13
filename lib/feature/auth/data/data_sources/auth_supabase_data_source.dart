@@ -1,4 +1,5 @@
 import 'package:clean_bloc_supabase/core/error/exception.dart';
+import 'package:clean_bloc_supabase/core/error/failures.dart';
 import 'package:clean_bloc_supabase/feature/auth/data/models/user_model.dart';
 import 'package:pretty_logger/pretty_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

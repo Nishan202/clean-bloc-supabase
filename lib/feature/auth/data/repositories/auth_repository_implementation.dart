@@ -1,14 +1,18 @@
 import 'package:clean_bloc_supabase/core/error/failures.dart';
 import 'package:clean_bloc_supabase/core/error/exception.dart';
+import 'package:clean_bloc_supabase/core/network/connection_checker.dart';
 import 'package:clean_bloc_supabase/feature/auth/data/data_sources/auth_supabase_data_source.dart';
 import 'package:clean_bloc_supabase/core/entities/user.dart';
 import 'package:clean_bloc_supabase/feature/auth/domain/repository/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 class AuthRepositoryImplementation implements AuthRepository {
+  final ConnectionChecker connectionChecker;
   final AuthSupabaseDataSource authSupabaseDataSource;
-  const AuthRepositoryImplementation(this.authSupabaseDataSource);
+  const AuthRepositoryImplementation(
+    this.authSupabaseDataSource,
+    this.connectionChecker,
+  );
 
   @override
   Future<Either<Failures, User>> currentUserDetails() async {
@@ -53,10 +57,11 @@ class AuthRepositoryImplementation implements AuthRepository {
 
   Future<Either<Failures, User>> _getUser(Future<User> Function() fn) async {
     try {
+      if (!await connectionChecker.isConnected) {
+        return left(Failures('No internet connection!'));
+      }
       final user = await fn();
       return right(user);
-    } on sb.AuthException catch (e) {
-      return left(Failures(e.message));
     } on ServerException catch (e) {
       return left(Failures(e.message));
     }
